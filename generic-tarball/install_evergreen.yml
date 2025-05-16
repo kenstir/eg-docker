@@ -328,7 +328,7 @@
   - name: Ensure that plperl is installed
     become: true
     ignore_errors: yes
-    shell: apt-get -y install postgresql-plperl-{{postgres_version}}
+    shell: apt-get -y --no-install-recommends install postgresql-plperl-{{postgres_version}}
 
   - name: Disable transparent_hugepages in grub
     become: true
