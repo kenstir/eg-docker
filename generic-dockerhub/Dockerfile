@@ -63,6 +63,8 @@ ansible-playbook install_evergreen.yml -v
 rm -rf /home/opensrf/{repos,.npm,*.tar.gz}
 EOF
 
+RUN rm /var/lib/apt/lists/*
+
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
