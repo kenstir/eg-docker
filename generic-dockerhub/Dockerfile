@@ -43,19 +43,25 @@ RUN	sed -i -E 's/^(\s*)system\(\);/\1unix-stream("\/dev\/log");/' /etc/syslog-ng
 # http://serverfault.com/questions/524518/error-setting-capabilities-capability-management-disabled#
 RUN	sed -i 's/^#\(SYSLOGNG_OPTS="--no-caps"\)/\1/g' /etc/default/syslog-ng
 
-ADD hosts /egconfigs/hosts
-ADD ejabberd_jammy.yml /egconfigs/ejabberd_jammy.yml
-ADD ejabberd_focal.yml /egconfigs/ejabberd_focal.yml
-ADD ejabberd_bionic.yml /egconfigs/ejabberd_bionic.yml
-ADD ejabberd_xenial.yml /egconfigs/ejabberd_xenial.yml
+COPY \
+    hosts \
+    ejabberd_jammy.yml \
+    ejabberd_focal.yml \
+    ejabberd_bionic.yml \
+    ejabberd_xenial.yml \
+    logrotate_evergreen.txt \
+    install_evergreen.yml \
+    evergreen_restart_services.yml \
+    restart_post_boot.yml \
+    run_tests.yml \
+    /egconfigs/
 
-ADD logrotate_evergreen.txt /egconfigs/logrotate_evergreen.txt
-
-ADD install_evergreen.yml /egconfigs/install_evergreen.yml
-ADD evergreen_restart_services.yml /egconfigs/evergreen_restart_services.yml
-ADD restart_post_boot.yml /egconfigs/restart_post_boot.yml
-ADD run_tests.yml /egconfigs/run_tests.yml
-RUN cd /egconfigs && ansible-playbook install_evergreen.yml -v
+RUN <<EOF
+set -e
+cd /egconfigs
+ansible-playbook install_evergreen.yml -v
+rm -rf /home/opensrf/{repos,.npm,*.tar.gz}
+EOF
 
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
